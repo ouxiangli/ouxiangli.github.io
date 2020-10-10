@@ -6,22 +6,16 @@
 
 ## 快速幂
 ```cpp
-int pow3(int x,int n){
-    if(n==0) return 1;
-    else {
-        while((n&1)==0){
-        n>>=1;
-        x*=x;
-        }
-    }
-    int result=x;
-    n>>=1;
-    while(n!=0){
-        x*=x;
-        if(n&1) result*=x;
-        n>>=1;
-    }
-    return result;
+int quickpow(int x,int y,int p)
+{
+    int n=1;
+    while(y!=0)
+    {
+        if (y&1) n=(n*x)%p;
+        x=(x*x)%p;
+        y=y>>1;
+	}
+    return n;
 }
 ```
 
@@ -196,3 +190,79 @@ int main()
 }
 
 ```
+
+## connected undirected simple graph（无向连通图）
+对于任意u、v，都有路径使得u、v连通
+
+# 图论
+## 判环
+
+
+
+# STL
+## rope模板（可持久化平衡树）
+```cpp
+#include<ext/rope>
+using namespace __gnu_cxx;
+
+rope list;
+list.insert(p,str)      // 在p的位置插入str
+list.erase(p,c)         // 删除list的从p开始的c个节点
+list.substr(p,c)        // 提取list的p位置开始的c个节点
+list.copy(p,c,str)      // 将list的p位置开始的c个节点复制给str
+list.replace(pos,x)     // 从pos开始替换成x
+```
+
+
+
+
+# 回文串
+## Manacher（马拉车：线性找回文串个数或者最大回文串）
+
+```cpp
+#include<cstdio>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<iostream>
+typedef long long ll;
+using namespace std;
+
+void Manacher(string s) {//计算最长回文串 
+    // Insert '#'
+    string t = "$#";
+    for (int i = 0; i < s.size(); ++i) {//这里有时候会卡时间（s.size要提前算出来） 
+        t += s[i];
+        t += "#";
+    }
+    // Process t
+    vector<int> p(t.size(), 0);
+    int mx = 0, id = 0, resLen = 0, resCenter = 0;
+    int num = 0;//统计回文串数量
+    for (int i = 1; i < t.size(); ++i) {
+        p[i] = mx > i ? min(p[2 * id - i], mx - i) : 1;
+        while (t[i + p[i]] == t[i - p[i]]) ++p[i];
+        if (mx < i + p[i]) {
+            mx = i + p[i];
+            id = i;
+        }
+        if (resLen < p[i]) {
+            resLen = p[i];
+            resCenter = i;
+        }
+        num += p[i]/2;//统计回文串数量 
+    }
+    cout<<"统计有多少回文串:\n"<<num<<endl;
+    cout<<"最长回文串（之一）\n"<<s.substr((resCenter - resLen) / 2, resLen - 1)<<endl;
+}
+
+int main(){
+	string x;
+	cin>>x;
+	Manacher(x);
+	
+	return 0;
+} 
+```
+
+
